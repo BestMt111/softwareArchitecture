@@ -20,7 +20,7 @@ public class Input implements Observer {
         this.fileName = fileName;
     }
 
-    public void readFromCommandLine(String host, int port) {
+    public void readFromCommandLine(String commandLine) {
 
     }
     public void readFromSocket(String host, int port) {

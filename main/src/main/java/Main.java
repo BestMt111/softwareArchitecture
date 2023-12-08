@@ -1,21 +1,43 @@
+import org.apache.commons.cli.*;
 
 public class Main {
     public static void main(String[] args) {
         //创建主题
-        KWICSubject kwicSubject = new KWICSubject();
-        //创建观察者
-        Input input = new Input("D:\\Lessons\\softwareArch\\project\\file\\null_in.txt");
-        Shift shift = new Shift(input.getLineTxt());
-        Alphabetizer alphabetizer = new Alphabetizer(shift.getKwicList());
-        Output output = new Output(alphabetizer.getKwicList(), "D:\\Lessons\\softwareArch\\project\\file\\null_out.txt");
+        Options options = new Options();
 
-        // 将观察者加入主题
-        kwicSubject.addObserver(input);
-        kwicSubject.addObserver(shift);
-        kwicSubject.addObserver(alphabetizer);
-        kwicSubject.addObserver(output);
-        // 逐步调用各个观察者
-        kwicSubject.startKWIC();
+        Option input = new Option("i", "input", true, "input file path");
+        input.setRequired(true);
+        options.addOption(input);
+
+        Option output = new Option("o", "output", true, "output file path");
+        output.setRequired(true);
+        options.addOption(output);
+
+        CommandLineParser parser = new DefaultParser();
+        HelpFormatter formatter = new HelpFormatter();
+        CommandLine cmd;
+
+        try {
+            cmd = parser.parse(options, args);
+            String inputFile = cmd.getOptionValue("input");
+            String outputFile = cmd.getOptionValue("output");
+
+            KWICSubject kwicSubject = new KWICSubject();
+            Input input_ = new Input(inputFile);
+            Shift shift = new Shift(input_.getLineTxt());
+            Alphabetizer alphabetizer = new Alphabetizer(shift.getKwicList());
+            Output output_ = new Output(alphabetizer.getKwicList(), outputFile);
+
+            kwicSubject.addObserver(input_);
+            kwicSubject.addObserver(shift);
+            kwicSubject.addObserver(alphabetizer);
+            kwicSubject.addObserver(output_);
+
+            kwicSubject.startKWIC();
+        } catch (ParseException e) {
+            System.out.println(e.getMessage());
+            formatter.printHelp("utility-name", options);
+            System.exit(1);
+        }
     }
-
 }
